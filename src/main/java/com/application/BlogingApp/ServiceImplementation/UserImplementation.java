@@ -1,13 +1,16 @@
 package com.application.BlogingApp.ServiceImplementation;
 
 import com.application.BlogingApp.Entity.User;
+import com.application.BlogingApp.Exceptions.ResourceNotFoundException;
 import com.application.BlogingApp.Payloads.UserDto;
 import com.application.BlogingApp.Repositories.UserRepository;
 import com.application.BlogingApp.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+import java.util.stream.Collectors;
+@Service
 public class UserImplementation implements UserService {
     @Autowired
     private UserRepository userRepository;
@@ -20,22 +23,32 @@ public class UserImplementation implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto, Integer userId) {
-        return null;
+        User user = this.userRepository.findById(userId).orElseThrow((()->new ResourceNotFoundException("User","Id",userId)));
+        user.setName(userDto.getName());
+        user.setId(userDto.getId());
+        user.setEmail(userDto.getEmail());
+        user.setPassword(userDto.getPassword());
+        user.setAbout(userDto.getAbout());
+        User updateUser = userRepository.save(user);
+        return this.UserToUserDTO(updateUser);
     }
 
     @Override
     public UserDto getOneUser(Integer userId) {
-        return null;
+        User user = this.userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User","Id",userId));
+        return this.UserToUserDTO(user);
     }
 
     @Override
     public List<UserDto> getAllUsers() {
-        return null;
+        List<User> users = this.userRepository.findAll();
+        return users.stream().map(user -> this.UserToUserDTO((User) users)).collect(Collectors.toList());
     }
 
     @Override
     public void deleteUser(Integer userId) {
-
+        User user = this.userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("Users","Id ",userId));
+        this.userRepository.deleteById(userId);
     }
 
     private User UserdtoToUser(UserDto userDto){
