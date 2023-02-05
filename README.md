@@ -5,8 +5,6 @@ Backend development for Blogging App API which contains api's about creating a u
 
 
 
-![download](https://user-images.githubusercontent.com/61879886/216837565-cdaba728-58b3-45d2-b4a3-b43f05fcc300.png)
-
 
 
 ![2459546-middle](https://user-images.githubusercontent.com/61879886/216837618-bb0e27ae-7cca-49be-9aca-2c757db177da.png)
