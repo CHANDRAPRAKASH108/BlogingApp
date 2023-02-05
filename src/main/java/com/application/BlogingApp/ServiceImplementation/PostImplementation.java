@@ -1,5 +1,4 @@
 package com.application.BlogingApp.ServiceImplementation;
-
 import com.application.BlogingApp.Entity.Category;
 import com.application.BlogingApp.Entity.Post;
 import com.application.BlogingApp.Entity.User;
@@ -14,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
+
 @Service
 public class PostImplementation implements PostService {
     @Autowired
@@ -38,7 +39,44 @@ public class PostImplementation implements PostService {
     }
 
     @Override
-    public PostDto updateUser(PostDto postDto, Integer postId) {
-        return null;
+    public PostDto updatePost(PostDto postDto, Integer postId) {
+        Post post = this.postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post ","Post With Id",postId));
+        post.setTitle(postDto.getTitle());
+        post.setContent(postDto.getContent());
+        post.setImageName(postDto.getImageName());
+        Post savePost = this.postRepository.save(post);
+        return this.modelMapper.map(savePost,PostDto.class);
+    }
+
+    @Override
+    public List<PostDto> getPostByCategory(Integer categoryId) {
+        Category category = this.categoryRepository.findById(categoryId).orElseThrow(()-> new ResourceNotFoundException("Category ","Category Id",categoryId));
+        List<Post> postList = this.postRepository.findByCategory(category);
+        return postList.stream().map(post -> this.modelMapper.map(post,PostDto.class)).toList();
+    }
+
+    @Override
+    public List<PostDto> getPostByUser(Integer userId) {
+        User user = this.userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User ","User ID",userId));
+        List<Post> postList = this.postRepository.findByUser(user);
+        return postList.stream().map(post -> this.modelMapper.map(post,PostDto.class)).toList();
+    }
+
+    @Override
+    public List<PostDto> getAllPost() {
+        List<Post> postList = this.postRepository.findAll();
+        return postList.stream().map(post -> this.modelMapper.map(post,PostDto.class)).toList();
+    }
+
+    @Override
+    public PostDto getPostById(Integer postId) {
+        Post post = this.postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post ","Post Id",postId));
+        return this.modelMapper.map(post,PostDto.class);
+    }
+
+    @Override
+    public void deletePost(Integer postId) {
+        Post post = this.postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post ","Post with Id",postId));
+        this.postRepository.delete(post);
     }
 }
