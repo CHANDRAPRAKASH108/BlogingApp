@@ -1,6 +1,7 @@
 package com.application.BlogingApp.Service;
 
 import com.application.BlogingApp.Payloads.PostDto;
+import com.application.BlogingApp.Payloads.PostResponse;
 
 import java.util.List;
 
@@ -9,7 +10,8 @@ public interface PostService {
     PostDto updatePost(PostDto postDto, Integer postId);
     List<PostDto> getPostByCategory(Integer categoryId);
     List<PostDto> getPostByUser(Integer userId);
-    List<PostDto> getAllPost();
+    PostResponse getAllPost(Integer pageNumber, Integer pageSize, String sortBy);
     PostDto getPostById(Integer postId);
     void deletePost(Integer postId);
+    List<PostDto> searchByTitle(String title);
 }

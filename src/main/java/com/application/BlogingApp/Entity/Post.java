@@ -15,7 +15,7 @@ import java.util.Date;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer post_id;
+    private Integer postId;
     @NotEmpty
     @Size(max = 100)
     private String title;

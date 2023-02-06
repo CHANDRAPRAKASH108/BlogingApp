@@ -4,12 +4,17 @@ import com.application.BlogingApp.Entity.Post;
 import com.application.BlogingApp.Entity.User;
 import com.application.BlogingApp.Exceptions.ResourceNotFoundException;
 import com.application.BlogingApp.Payloads.PostDto;
+import com.application.BlogingApp.Payloads.PostResponse;
 import com.application.BlogingApp.Repositories.CategoryRepository;
 import com.application.BlogingApp.Repositories.PostRepository;
 import com.application.BlogingApp.Repositories.UserRepository;
 import com.application.BlogingApp.Service.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -63,9 +68,18 @@ public class PostImplementation implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPost() {
-        List<Post> postList = this.postRepository.findAll();
-        return postList.stream().map(post -> this.modelMapper.map(post,PostDto.class)).toList();
+    public PostResponse getAllPost(Integer pageNumber , Integer pageSize,String sortBy) {
+        Pageable p = PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
+        Page<Post> allPost = this.postRepository.findAll(p);
+        List<Post> postList = allPost.getContent();
+        List<PostDto> postDto = postList.stream().map(post -> this.modelMapper.map(post,PostDto.class)).toList();
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(postDto);
+        postResponse.setPageNumber(p.getPageNumber());
+        postResponse.setLastPage(allPost.isLast());
+        postResponse.setTotalElements(allPost.getTotalElements());
+        postResponse.setPageSize(allPost.getSize());
+        return postResponse;
     }
 
     @Override
@@ -78,5 +92,11 @@ public class PostImplementation implements PostService {
     public void deletePost(Integer postId) {
         Post post = this.postRepository.findById(postId).orElseThrow(()->new ResourceNotFoundException("Post ","Post with Id",postId));
         this.postRepository.delete(post);
+    }
+
+    @Override
+    public List<PostDto> searchByTitle(String title) {
+        List<Post> postList = this.postRepository.findByTitleContaining(title);
+        return postList.stream().map(post -> this.modelMapper.map(post,PostDto.class)).toList();
     }
 }

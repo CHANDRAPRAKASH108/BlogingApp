@@ -1,6 +1,8 @@
 package com.application.BlogingApp.Controller;
+import com.application.BlogingApp.Config.Constants;
 import com.application.BlogingApp.Payloads.ApiResponse;
 import com.application.BlogingApp.Payloads.PostDto;
+import com.application.BlogingApp.Payloads.PostResponse;
 import com.application.BlogingApp.Service.PostService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +44,11 @@ public class PostController {
 
     //get all post
     @GetMapping("/post")
-    public ResponseEntity<List<PostDto>> getAllPost(){
-        List<PostDto> postDtoList = this.postService.getAllPost();
+    public ResponseEntity<PostResponse> getAllPost(
+            @RequestParam(value = "pageNumber",defaultValue = Constants.PAGE_NUMBER,required = false) Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = Constants.PAGE_SIZE,required = false) Integer pageSize,
+            @RequestParam(value = "sortBy", defaultValue = Constants.SORT_BY,required = false) String sortBy ){
+        PostResponse postDtoList = this.postService.getAllPost(pageNumber,pageSize,sortBy);
         return new ResponseEntity<>(postDtoList,HttpStatus.OK);
     }
     // get post by id
@@ -67,5 +72,12 @@ public class PostController {
             @PathVariable Integer postId){
         PostDto postDto1= this.postService.updatePost(postDto,postId);
         return new ResponseEntity<>(postDto1,HttpStatus.OK);
+    }
+
+    //post search by title
+    @GetMapping("/post/search/{title}")
+    public ResponseEntity<List<PostDto>> searchPostByTitle(@PathVariable String title){
+        List<PostDto> postDto = this.postService.searchByTitle(title);
+        return new ResponseEntity<>(postDto,HttpStatus.OK);
     }
 }
