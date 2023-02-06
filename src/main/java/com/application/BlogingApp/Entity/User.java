@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @Getter
@@ -26,4 +28,7 @@ public class User{
     private String about;
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
+    @Column(name = "user_id")
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private Set<Comment> comments = new HashSet<>();
 }
