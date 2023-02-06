@@ -9,7 +9,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class PostDto {
-    private Integer postId;
+    private Integer id;
     @NotEmpty
     private String title;
     @NotEmpty
